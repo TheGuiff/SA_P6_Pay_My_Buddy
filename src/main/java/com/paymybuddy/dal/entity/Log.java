@@ -8,11 +8,11 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Entity
-@Table(name="log", schema = "public")
+@Table(name="log")
 public class Log {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(name="email")
@@ -23,6 +23,6 @@ public class Log {
 
     @OneToOne
     @JoinColumn(name="user_id")
-    private User utilisateur;
+    private User user;
 
 }
