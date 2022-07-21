@@ -4,22 +4,24 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Entity
-@Table(name="transaction", schema = "public")
+@Table(name="transaction")
 public class Transaction {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(name="description")
     private String description;
 
     @Column(name="date_transaction")
-    private String dateTransaction;
+    private LocalDateTime dateTransaction;
 
     @Column(name="amount")
     private Double amount;
@@ -27,16 +29,12 @@ public class Transaction {
     @Column(name="commission")
     private Double commission;
 
-    @ManyToOne(cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_from")
+    @ManyToOne()
+    @JoinColumn(name="user_from")
     private User userFrom;
 
-    @ManyToOne(cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_to")
+    @ManyToOne()
+    @JoinColumn(name="user_to")
     private User userTo;
-
-
 
 }

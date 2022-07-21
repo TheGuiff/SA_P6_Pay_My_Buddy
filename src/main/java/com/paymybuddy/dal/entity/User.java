@@ -10,11 +10,11 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name="user", schema = "public")
+@Table(name="user")
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(name="firstname")
@@ -29,17 +29,14 @@ public class User {
     @Column(name="balance")
     private Double balance;
 
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.EAGER
-    )
-    @JoinColumn(name="user_id")
-    List<Movement> movements = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private List<Movement> movements = new ArrayList<>();
+
+    @OneToMany(mappedBy = "userFrom")
+    List<Transaction> transactions = new ArrayList<>();
 
     @ManyToMany(
-            cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER
+            fetch = FetchType.LAZY
     )
     @JoinTable(
             name = "connection",
@@ -47,11 +44,5 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "user_id2")
     )
     List<User> connections = new ArrayList<>();
-
-    @OneToMany(mappedBy = "userFrom")
-    List<Transaction> transactionsFrom = new ArrayList<>();
-
-    @OneToMany(mappedBy = "userTo")
-    List<Transaction> transactionsTo = new ArrayList<>();
 
 }
