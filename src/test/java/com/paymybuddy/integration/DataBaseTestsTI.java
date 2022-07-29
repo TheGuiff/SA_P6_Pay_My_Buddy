@@ -10,12 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
-import javax.transaction.Transactional;
-
 
 @SpringBootTest
 @TestPropertySource(locations="/application-test.properties")
-public class DataBaseTests {
+public class DataBaseTestsTI {
 
     @Autowired
     private LogRepository logRepository;
