@@ -4,13 +4,10 @@ import com.paymybuddy.dal.entity.*;
 import com.paymybuddy.dal.repository.LogRepository;
 import com.paymybuddy.dal.repository.MovementRepository;
 import com.paymybuddy.dal.repository.UserRepository;
-import com.paymybuddy.web.dto.LogDto;
-import com.paymybuddy.web.dto.MovementDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -21,25 +18,6 @@ public class UserService {
 
     @Autowired
     private LogRepository logRepository;
-
-    @Autowired
-    private MovementRepository movementRepository;
-
-    public Iterable<User> getUsers() {
-        return userRepository.findAll();
-    }
-
-   public Optional<User> getUserById (Long id) {
-        return userRepository.findById(id);
-   }
-
-   public User addUser (User user) {
-        return userRepository.save(user);
-   }
-
-   public void deleteUserById (Long id) {
-        userRepository.deleteById(id);
-   }
 
    @Transactional
    public User addConnection (User user, String email) {

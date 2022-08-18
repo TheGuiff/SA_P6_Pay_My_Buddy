@@ -58,6 +58,7 @@ public class TransactionServiceTest {
     private static final String lastName2 = "Lastname2";
     private static final Double balance2 = 80.0;
     private static final Double amountTransaction = 10.0;
+    private static final String transactionDescription = "Test Transaction";
 
     private User user1 = new User();
     private User user2 = new User();
@@ -100,6 +101,7 @@ public class TransactionServiceTest {
         transactionDto.setUserFrom(user1);
         transactionDto.setUserTo(user2);
         transactionDto.setAmount(0.0);
+        transactionDto.setDescription(transactionDescription);
         assertThrows(Exception.class,() -> transactionService.newTransactionService(transactionDto));
     }
 
@@ -108,6 +110,7 @@ public class TransactionServiceTest {
         transactionDto.setUserFrom(user1);
         transactionDto.setUserTo(user2);
         transactionDto.setAmount(amountTransaction+balance1);
+        transactionDto.setDescription(transactionDescription);
         Assertions.assertThrows(Exception.class,() -> transactionService.newTransactionService(transactionDto));
     }
 
@@ -116,6 +119,7 @@ public class TransactionServiceTest {
         transactionDto.setUserFrom(user1);
         transactionDto.setUserTo(user2);
         transactionDto.setAmount(amountTransaction);
+        transactionDto.setDescription(transactionDescription);
         Transaction transaction = transactionService.newTransactionService(transactionDto);
         assertTrue(transactionRepository.findById(transaction.getId()).isPresent());
     }

@@ -1,20 +1,16 @@
 package com.paymybuddy.service;
 
 import com.paymybuddy.dal.entity.Log;
+import com.paymybuddy.dal.entity.User;
 import com.paymybuddy.dal.repository.LogRepository;
+import com.paymybuddy.dal.repository.UserRepository;
 import com.paymybuddy.web.dto.LogDto;
+import com.paymybuddy.web.dto.NewUserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import javax.xml.bind.DatatypeConverter;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class LogService {
@@ -22,21 +18,8 @@ public class LogService {
     @Autowired
     private LogRepository logRepository;
 
-    public Iterable<Log> getLogs() {
-        return logRepository.findAll();
-    }
-
-    public Optional<Log> getLogById (Long id) {
-        return logRepository.findById(id);
-    }
-
-    public Log addLog (Log log) {
-        return logRepository.save(log);
-    }
-
-    public void deleteLogById (Long id) {
-        logRepository.deleteById(id);
-    }
+    @Autowired
+    private UserRepository userRepository;
 
     @Transactional
     public Log logAndGetUser (LogDto logDto) {
@@ -45,6 +28,26 @@ public class LogService {
             return logConnections.get(0);
         } else {
             throw new NoSuchElementException("email or password unknown");
+        }
+    }
+
+    public Log newUserAndLog (NewUserDto newUserDto) {
+        List<Log> logConnections = logRepository.findByEmail(newUserDto.getEmail());
+
+        if (logConnections.size() == 1) { //Utilisateur existe déjà
+            throw new InputMismatchException("email already exist in database");
+        } else if (newUserDto.getMdp().length() == 0) {
+            throw new InputMismatchException("password can't be empty");
+        } else {
+            Log log = new Log();
+            User user = new User();
+            log.setEmail(newUserDto.getEmail());
+            log.setMdp(newUserDto.getMdp());
+            user.setFirstName(newUserDto.getFirstName());
+            user.setLastName(newUserDto.getLastName());
+            user = userRepository.save(user);
+            log.setUser(user);
+            return logRepository.hashPasswordAndSave(log);
         }
     }
 
