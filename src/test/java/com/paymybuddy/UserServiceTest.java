@@ -5,11 +5,7 @@ import com.paymybuddy.dal.repository.LogRepository;
 import com.paymybuddy.dal.repository.MovementRepository;
 import com.paymybuddy.dal.repository.TransactionRepository;
 import com.paymybuddy.dal.repository.UserRepository;
-import com.paymybuddy.service.MovementService;
 import com.paymybuddy.service.UserService;
-import com.paymybuddy.web.dto.LogDto;
-import com.paymybuddy.web.dto.MovementDto;
-import org.apache.commons.lang.text.StrBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -18,14 +14,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.test.context.TestPropertySource;
 
 import javax.transaction.Transactional;
 import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @SpringBootTest
@@ -49,43 +43,46 @@ public class UserServiceTest {
     @Autowired
     UserService userService;
 
-    @Autowired
-    MovementService movementService;
-
-    private static String email1 = "email1@test.com";
-    private static String mdp1 = "mdpTest1";
-    private static String firstName1 = "Firstname1";
-    private static String lastName1 = "Lastname1";
-    private static Double balance1 = 100.0;
-    private static String email2 = "email2@test.com";
-    private static String mdp2 = "mdpTest2";
-    private static String firstName2 = "Firstname2";
-    private static String lastName2 = "Lastname2";
-    private static Double balance2 = 80.0;
-    private static String email3 = "email3@test.com";
-    private static String mdp3 = "mdpTest3";
-    private static String firstName3 = "Firstname3";
-    private static String lastName3 = "Lastname3";
-    private static Double balance3 = 150.0;
-    private static String email4 = "email4@test.com";
-    private static String mdp4 = "mdpTest4";
-    private static String firstName4 = "Firstname4";
-    private static String lastName4 = "Lastname4";
-    private static Double balance4 = 90.0;
-    private static String emailKo = "emailKO@test.com";
-    private static String mdpKo = "mdpKoTest";
-    private static Double amountMovement = 10.0;
+    private static final String email1 = "email1@test.com";
+    private static final String mdp1 = "mdpTest1";
+    private static final String firstName1 = "Firstname1";
+    private static final String lastName1 = "Lastname1";
+    private static final Double balance1 = 100.0;
+    private static final String email2 = "email2@test.com";
+    private static final String mdp2 = "mdpTest2";
+    private static final String firstName2 = "Firstname2";
+    private static final String lastName2 = "Lastname2";
+    private static final Double balance2 = 80.0;
+    private static final String email3 = "email3@test.com";
+    private static final String mdp3 = "mdpTest3";
+    private static final String firstName3 = "Firstname3";
+    private static final String lastName3 = "Lastname3";
+    private static final Double balance3 = 150.0;
+    private static final String email4 = "email4@test.com";
+    private static final String mdp4 = "mdpTest4";
+    private static final String firstName4 = "Firstname4";
+    private static final String lastName4 = "Lastname4";
+    private static final Double balance4 = 90.0;
+    private static final String email5 = "email5@test.com";
+    private static final String mdp5 = "mdpTest5";
+    private static final String firstName5 = "Firstname5";
+    private static final String lastName5 = "Lastname5";
+    private static final Double balance5 = 75.0;
+    private static final String emailKo = "emailKO@test.com";
+    private static final Double amountMovement = 10.0;
+    private static final Double amountTransaction = 20.0;
+    private static final Double transactionCommission = 1.0;
 
     private User user1 = new User();
     private User user2 = new User();
     private User user3 = new User();
     private User user4 = new User();
+    private User user5 = new User();
     private Log log1 = new Log();
     private Log log2 = new Log();
     private Log log3 = new Log();
     private Log log4 = new Log();
-    private LogDto logDto = new LogDto();
-    private MovementDto movementDto = new MovementDto();
+    private Log log5 = new Log();
 
     @BeforeAll
     public void initDataBase(){
@@ -134,6 +131,16 @@ public class UserServiceTest {
         log4.setMdp(mdp4);
         log4.setUser(user4);
         log4 = logRepository.save(log4);
+
+        //User 5 - log et user
+        user5.setFirstName(firstName5);
+        user5.setLastName(lastName5);
+        user5.setBalance(balance5);
+        user5 = userRepository.save(user5);
+        log5.setEmail(email5);
+        log5.setMdp(mdp5);
+        log5.setUser(user5);
+        log5 = logRepository.save(log5);
     }
 
     @Test
@@ -145,31 +152,6 @@ public class UserServiceTest {
     @Test
     public void addConnectionTestKo () {
         Assertions.assertThrows(NoSuchElementException.class,() -> userService.addConnection(user1, emailKo));
-    }
-
-    @Test
-    public void logInTestOk() {
-        logDto.setEmail(email1);
-        logDto.setMdp(mdp1);
-        Log logOut = userService.logAndGetUser(logDto);
-        assertEquals(email1, logOut.getEmail());
-        assertEquals(mdp1, logOut.getMdp());
-        assertEquals(firstName1, logOut.getUser().getFirstName());
-        assertEquals(lastName1, logOut.getUser().getLastName());
-    }
-
-    @Test
-    public void logInKoUnknownUser() {
-        logDto.setEmail(emailKo);
-        logDto.setMdp(mdp1);
-        Assertions.assertThrows(NoSuchElementException.class,() -> userService.logAndGetUser(logDto));
-    }
-
-    @Test
-    public void logInKoWrongPassword() {
-        logDto.setEmail(email1);
-        logDto.setMdp(mdpKo);
-        Assertions.assertThrows(NoSuchElementException.class,() -> userService.logAndGetUser(logDto));
     }
 
     @Test
@@ -194,5 +176,21 @@ public class UserServiceTest {
         User userTest = userService.addMovementToUser(user4, movement);
         assertEquals(oldbalance-amountMovement, userTest.getBalance());
         assertEquals(1, userTest.getMovements().size());
+    }
+
+    @Test
+    @Transactional
+    public void addTransactionToUserTest() {
+        Transaction transaction = new Transaction();
+        transaction.setAmount(amountTransaction);
+        transaction.setCommission(transactionCommission);
+        transaction.setUserFrom(user2);
+        transaction.setUserTo(user5);
+        Double oldbalance2 = user2.getBalance();
+        Double oldBalance5 = user5.getBalance();
+        User userTest = userService.addTransactionToUser(user2, user5, transaction);
+        assertEquals(oldbalance2-amountTransaction, userTest.getBalance());
+        assertEquals(oldBalance5+amountTransaction-transactionCommission, user5.getBalance());
+        assertEquals(1, userTest.getTransactions().size());
     }
 }
