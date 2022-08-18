@@ -8,6 +8,7 @@ import com.paymybuddy.dal.repository.TransactionRepository;
 import com.paymybuddy.dal.repository.UserRepository;
 import com.paymybuddy.service.LogService;
 import com.paymybuddy.web.dto.LogDto;
+import com.paymybuddy.web.dto.NewUserDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
+import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,11 +49,17 @@ public class LogServiceTest {
     private static final String firstName1 = "Firstname1";
     private static final String lastName1 = "Lastname1";
 
+    private static final String email2 = "email2@test.com";
+    private static final String mdp2 = "mdpTest2";
+    private static final String firstname2 = "Firstname2";
+    private static final String lastname2 = "Lastname2";
+
     private User user1 = new User();
     private Log log1 = new Log();
     private final LogDto logDto = new LogDto();
     private static final String emailKo = "emailKO@test.com";
     private static final String mdpKo = "mdpKoTest";
+    private final NewUserDto newUserDto = new NewUserDto();
 
     @BeforeAll
     public void initDataBase() {
@@ -94,6 +102,37 @@ public class LogServiceTest {
         logDto.setEmail(email1);
         logDto.setMdp(mdpKo);
         Assertions.assertThrows(NoSuchElementException.class,() -> logService.logAndGetUser(logDto));
+    }
+
+    @Test
+    public void newUserOk() {
+        newUserDto.setEmail(email2);
+        newUserDto.setLastName(lastname2);
+        newUserDto.setFirstName(firstname2);
+        newUserDto.setMdp(mdp2);
+        Log logOut = logService.newUserAndLog(newUserDto);
+        assertEquals(email2, logOut.getEmail());
+        assertEquals(logRepository.hashPassword(mdp2), logOut.getMdp());
+        assertEquals(firstname2, logOut.getUser().getFirstName());
+        assertEquals(lastname2, logOut.getUser().getLastName());
+    }
+
+    @Test
+    public void newUserKoPasswordEmpty() {
+        newUserDto.setEmail(email2);
+        newUserDto.setLastName(lastname2);
+        newUserDto.setFirstName(firstname2);
+        newUserDto.setMdp("");
+        Assertions.assertThrows(InputMismatchException.class,() -> logService.newUserAndLog(newUserDto));
+    }
+
+    @Test
+    public void newUserKoEmailAlreadyExist() {
+        newUserDto.setEmail(email1);
+        newUserDto.setLastName(lastname2);
+        newUserDto.setFirstName(firstname2);
+        newUserDto.setMdp("");
+        Assertions.assertThrows(InputMismatchException.class,() -> logService.newUserAndLog(newUserDto));
     }
 
 }
