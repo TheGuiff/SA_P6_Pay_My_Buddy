@@ -7,6 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import javax.xml.bind.DatatypeConverter;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -37,10 +41,11 @@ public class LogService {
     @Transactional
     public Log logAndGetUser (LogDto logDto) {
         List<Log> logConnections = logRepository.findByEmail(logDto.getEmail());
-        if (logConnections.size() == 1 && Objects.equals(logDto.getMdp(), logConnections.get(0).getMdp())) {
+        if (logConnections.size() == 1 && Objects.equals(logRepository.hashPassword(logDto.getMdp()), logConnections.get(0).getMdp())) {
             return logConnections.get(0);
         } else {
             throw new NoSuchElementException("email or password unknown");
         }
     }
+
 }
