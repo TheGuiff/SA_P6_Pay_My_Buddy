@@ -95,7 +95,7 @@ public class MovementServiceTest {
         user1.setBalance(balance1);
         user1 = userRepository.save(user1);
         log1.setUser(user1);
-        log1 = logRepository.save(log1);
+        log1 = logRepository.hashPasswordAndSave(log1);
 
         //User 2 - log et user
         user2.setFirstName(firstName2);
@@ -105,7 +105,7 @@ public class MovementServiceTest {
         log2.setEmail(email2);
         log2.setMdp(mdp2);
         log2.setUser(user2);
-        log2 = logRepository.save(log2);
+        log2 = logRepository.hashPasswordAndSave(log2);
 
         //User 3 - log et user
         user3.setFirstName(firstName3);
@@ -115,7 +115,7 @@ public class MovementServiceTest {
         log3.setEmail(email3);
         log3.setMdp(mdp3);
         log3.setUser(user3);
-        log3 = logRepository.save(log3);
+        log3 = logRepository.hashPasswordAndSave(log3);
 
         //User 4 - log et user
         user4.setFirstName(firstName4);
@@ -125,7 +125,7 @@ public class MovementServiceTest {
         log4.setEmail(email4);
         log4.setMdp(mdp4);
         log4.setUser(user4);
-        log4 = logRepository.save(log4);
+        log4 = logRepository.hashPasswordAndSave(log4);
     }
 
     @Test

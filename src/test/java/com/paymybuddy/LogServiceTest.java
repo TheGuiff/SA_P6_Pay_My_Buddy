@@ -68,7 +68,7 @@ public class LogServiceTest {
         user1.setLastName(lastName1);
         user1 = userRepository.save(user1);
         log1.setUser(user1);
-        log1 = logRepository.save(log1);
+        log1 = logRepository.hashPasswordAndSave(log1);
     }
 
     @Test
@@ -77,7 +77,7 @@ public class LogServiceTest {
         logDto.setMdp(mdp1);
         Log logOut = logService.logAndGetUser(logDto);
         assertEquals(email1, logOut.getEmail());
-        assertEquals(mdp1, logOut.getMdp());
+        assertEquals(logRepository.hashPassword(mdp1), logOut.getMdp());
         assertEquals(firstName1, logOut.getUser().getFirstName());
         assertEquals(lastName1, logOut.getUser().getLastName());
     }

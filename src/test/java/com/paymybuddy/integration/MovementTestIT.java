@@ -76,7 +76,7 @@ public class MovementTestIT {
         user1.setBalance(balance1);
         user1 = userRepository.save(user1);
         log1.setUser(user1);
-        log1 = logRepository.save(log1);
+        log1 = logRepository.hashPasswordAndSave(log1);
 
         //User 2 - log et user
         user2.setFirstName(firstName2);
@@ -86,7 +86,7 @@ public class MovementTestIT {
         log2.setEmail(email2);
         log2.setMdp(mdp2);
         log2.setUser(user2);
-        log2 = logRepository.save(log2);
+        log2 = logRepository.hashPasswordAndSave(log2);
     }
 
     @Test
