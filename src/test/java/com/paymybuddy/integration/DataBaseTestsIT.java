@@ -13,7 +13,7 @@ import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
 @TestPropertySource(locations="/application-test.properties")
-public class DataBaseTestsTI {
+public class DataBaseTestsIT {
 
     @Autowired
     private LogRepository logRepository;
@@ -54,7 +54,7 @@ public class DataBaseTestsTI {
 
         //Mouvement sur le user 1
         Movement newMovement = new Movement();
-        newMovement.setAmount(Double.valueOf(200));
+        newMovement.setAmount(200.0);
         newMovement.setType(TypeMovement.CREDIT);
         newMovement.setUser(newUser);
         newMovement = movementRepository.save(newMovement);

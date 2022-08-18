@@ -1,9 +1,6 @@
 package com.paymybuddy.service;
 
-import com.paymybuddy.dal.entity.Log;
-import com.paymybuddy.dal.entity.Movement;
-import com.paymybuddy.dal.entity.TypeMovement;
-import com.paymybuddy.dal.entity.User;
+import com.paymybuddy.dal.entity.*;
 import com.paymybuddy.dal.repository.LogRepository;
 import com.paymybuddy.dal.repository.MovementRepository;
 import com.paymybuddy.dal.repository.UserRepository;
@@ -56,16 +53,6 @@ public class UserService {
    }
 
    @Transactional
-   public Log logAndGetUser (LogDto logDto) {
-        List<Log> logConnections = logRepository.findByEmail(logDto.getEmail());
-        if (logConnections.size() == 1 && Objects.equals(logDto.getMdp(), logConnections.get(0).getMdp())) {
-            return logConnections.get(0);
-        } else {
-            throw new NoSuchElementException("email or password unknown");
-        }
-   }
-
-   @Transactional
     public User addMovementToUser (User user, Movement movement) {
        if (movement.getType() == TypeMovement.CREDIT) {
            user.setBalance(user.getBalance() + movement.getAmount());
@@ -74,6 +61,15 @@ public class UserService {
        }
        user.getMovements().add(movement);
        return userRepository.save(user);
+   }
+
+   @Transactional
+    public User addTransactionToUser (User userFrom, User userTo, Transaction transaction) {
+        userFrom.setBalance(userFrom.getBalance()-transaction.getAmount());
+        userTo.setBalance(userTo.getBalance()+transaction.getAmount()-transaction.getCommission());
+        userFrom.getTransactions().add(transaction);
+        userRepository.save(userTo);
+        return userRepository.save(userFrom);
    }
 
 }
