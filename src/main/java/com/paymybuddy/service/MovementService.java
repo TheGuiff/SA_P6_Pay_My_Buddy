@@ -18,6 +18,8 @@ public class MovementService {
 
     @Transactional
     public Movement newMovementService (MovementDto movementDto) throws Exception {
+        //vérifie mouvement supérieur à zéro et inférieur au solde (si retrait)
+        // Attention - ne crée que le mouvement - on fait ensuite un addMovementToUser de UserService - voir MovementTestIT
         if (movementDto.getAmount() > 0.0) {
             if (movementDto.getType() == TypeMovement.DEBIT && movementDto.getAmount() > movementDto.getUser().getBalance()) {
                 throw new Exception("Account balance (" + movementDto.getUser().getBalance() + ") insufficient for debit (" + movementDto.getAmount() + ")");

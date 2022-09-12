@@ -17,6 +17,8 @@ public class TransactionService {
 
     @Transactional
     public Transaction newTransactionService (TransactionDto transactionDto) throws Exception {
+        // Transaction de montant non nul et de solde suffisant
+        // Attention - ne crée que la transaction - on fait ensuite un addTransactionToUser de UserService (voir TransactionTestIT
         if (transactionDto.getAmount() > 0.0) {
             if ( transactionDto.getAmount() > transactionDto.getUserFrom().getBalance()) {
                 throw new Exception("Account balance (" + transactionDto.getUserFrom().getBalance() + ") insufficient for debit (" + transactionDto.getAmount() + ")");
