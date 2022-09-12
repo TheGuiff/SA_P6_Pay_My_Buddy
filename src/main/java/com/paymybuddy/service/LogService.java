@@ -23,6 +23,7 @@ public class LogService {
 
     @Transactional
     public Log logAndGetUser (LogDto logDto) {
+        //Se connecter pour un user existant - sinon exception
         List<Log> logConnections = logRepository.findByEmail(logDto.getEmail());
         if (logConnections.size() == 1 && Objects.equals(logRepository.hashPassword(logDto.getMdp()), logConnections.get(0).getMdp())) {
             return logConnections.get(0);
@@ -32,8 +33,8 @@ public class LogService {
     }
 
     public Log newUserAndLog (NewUserDto newUserDto) {
+        // Nouvel utilisateur - vérifie qu'il n'existe pas déjà et qu'un mdp est renseigné
         List<Log> logConnections = logRepository.findByEmail(newUserDto.getEmail());
-
         if (logConnections.size() == 1) { //Utilisateur existe déjà
             throw new InputMismatchException("email already exist in database");
         } else if (newUserDto.getMdp().length() == 0) {
