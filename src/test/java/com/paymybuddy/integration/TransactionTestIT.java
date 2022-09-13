@@ -5,6 +5,7 @@ import com.paymybuddy.dal.repository.LogRepository;
 import com.paymybuddy.dal.repository.MovementRepository;
 import com.paymybuddy.dal.repository.TransactionRepository;
 import com.paymybuddy.dal.repository.UserRepository;
+import com.paymybuddy.service.TransactionInternalService;
 import com.paymybuddy.service.TransactionService;
 import com.paymybuddy.service.UserService;
 import com.paymybuddy.web.dto.TransactionDto;
@@ -34,6 +35,8 @@ public class TransactionTestIT {
     UserService userService;
     @Autowired
     TransactionService transactionService;
+    @Autowired
+    TransactionInternalService transactionInternalService;
 
     private static final String email1 = "email1@test.com";
     private static final String mdp1 = "mdpTest1";
@@ -106,9 +109,8 @@ public class TransactionTestIT {
         transactionDto.setAmount(amountTransaction);
         transactionDto.setUserFrom(user1);
         transactionDto.setUserTo(user2);
-        Transaction transaction = transactionService.newTransactionService(transactionDto);
-        user1 = userService.addTransactionToUser(user1, user2, transaction);
-        assertEquals((balance1-amountTransaction), user1.getBalance());
-        assertEquals(balance2+amountTransaction-transaction.getCommission(),user2.getBalance());
+        Transaction transaction = transactionInternalService.newTransactionInternalService(transactionDto);
+        assertEquals((balance1-amountTransaction), transaction.getUserFrom().getBalance());
+        assertEquals(balance2+amountTransaction-transaction.getCommission(),transaction.getUserTo().getBalance());
     }
 }

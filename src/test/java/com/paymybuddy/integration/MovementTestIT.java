@@ -8,8 +8,7 @@ import com.paymybuddy.dal.repository.LogRepository;
 import com.paymybuddy.dal.repository.MovementRepository;
 import com.paymybuddy.dal.repository.TransactionRepository;
 import com.paymybuddy.dal.repository.UserRepository;
-import com.paymybuddy.service.MovementService;
-import com.paymybuddy.service.UserService;
+import com.paymybuddy.service.MovementInternalService;
 import com.paymybuddy.web.dto.MovementDto;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +33,7 @@ public class MovementTestIT {
     @Autowired
     MovementRepository movementRepository;
     @Autowired
-    UserService userService;
-    @Autowired
-    MovementService movementService;
+    MovementInternalService movementInternalService;
 
     private static final String email1 = "email1@test.com";
     private static final String mdp1 = "mdpTest1";
@@ -84,9 +81,8 @@ public class MovementTestIT {
         movementDto.setType(TypeMovement.CREDIT);
         movementDto.setAmount(amountMovement);
         movementDto.setUser(user1);
-        Movement movement = movementService.newMovementService(movementDto);
-        user1 = userService.addMovementToUser(user1, movement);
-        assertEquals((balance+amountMovement), user1.getBalance());
+        Movement movement = movementInternalService.newMovementInternalService(movementDto);
+        assertEquals((balance+amountMovement), movement.getUser().getBalance());
     }
 
     @Test
@@ -94,8 +90,7 @@ public class MovementTestIT {
         movementDto.setType(TypeMovement.DEBIT);
         movementDto.setAmount(amountMovement);
         movementDto.setUser(user1);
-        Movement movement = movementService.newMovementService(movementDto);
-        user1 = userService.addMovementToUser(user1, movement);
-        assertEquals((balance-amountMovement), user1.getBalance());
+        Movement movement = movementInternalService.newMovementInternalService(movementDto);
+        assertEquals((balance-amountMovement), movement.getUser().getBalance());
     }
 }
