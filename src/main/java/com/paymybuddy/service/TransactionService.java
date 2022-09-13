@@ -22,7 +22,7 @@ public class TransactionService {
         if (transactionDto.getAmount() > 0.0) {
             if ( transactionDto.getAmount() > transactionDto.getUserFrom().getBalance()) {
                 throw new Exception("Account balance (" + transactionDto.getUserFrom().getBalance() + ") insufficient for debit (" + transactionDto.getAmount() + ")");
-            } else {
+            } if (transactionDto.getUserFrom().getConnections().contains(transactionDto.getUserTo())) {
                 Transaction transaction = new Transaction();
                 transaction.setDescription(transactionDto.getDescription());
                 transaction.setDateTransaction(LocalDateTime.now());
@@ -31,6 +31,11 @@ public class TransactionService {
                 transaction.setUserFrom(transactionDto.getUserFrom());
                 transaction.setUserTo(transactionDto.getUserTo());
                 return transactionRepository.save(transaction);
+            }
+            // Si le user de destination n'est pas dans les contacts du user d'origine
+            else {
+                throw new Exception("User " + transactionDto.getUserTo().getFirstName() + ", " + transactionDto.getUserTo().getLastName() +
+                        " is not a connection of " + transactionDto.getUserFrom().getFirstName() + ", " + transactionDto.getUserFrom().getLastName());
             }
         } else {
             throw new Exception("Transaction with no account");

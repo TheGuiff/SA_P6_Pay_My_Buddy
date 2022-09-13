@@ -5,10 +5,8 @@ import com.paymybuddy.dal.repository.LogRepository;
 import com.paymybuddy.dal.repository.MovementRepository;
 import com.paymybuddy.dal.repository.TransactionRepository;
 import com.paymybuddy.dal.repository.UserRepository;
-import com.paymybuddy.service.MovementService;
 import com.paymybuddy.service.TransactionService;
 import com.paymybuddy.service.UserService;
-import com.paymybuddy.web.dto.MovementDto;
 import com.paymybuddy.web.dto.TransactionDto;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +94,9 @@ public class TransactionServiceTest {
         log2.setUser(user2);
         logRepository.hashPasswordAndSave(log2);
 
+        //user2 est une connection de user1
+        user1.getConnections().add(user2);
+
     }
 
     @AfterAll
@@ -116,7 +117,7 @@ public class TransactionServiceTest {
     }
 
     @Test
-    public void movementKONotEnoughBalance() {
+    public void transactionKONotEnoughBalance() {
         transactionDto.setUserFrom(user1);
         transactionDto.setUserTo(user2);
         transactionDto.setAmount(amountTransaction+balance1);
@@ -125,7 +126,19 @@ public class TransactionServiceTest {
     }
 
     @Test
-    public void movementCreditOk() throws Exception {
+    public void transactionKOWhenNoConnection() {
+        User userTest = new User();
+        userTest.setFirstName("Usertest");
+        userTest.setLastName(("NoConnection"));
+        transactionDto.setUserFrom(user1);
+        transactionDto.setUserTo(userTest);
+        transactionDto.setAmount(amountTransaction);
+        transactionDto.setDescription(transactionDescription);
+        Assertions.assertThrows(Exception.class,() -> transactionService.newTransactionService(transactionDto));
+    }
+
+    @Test
+    public void transactionCreditOk() throws Exception {
         transactionDto.setUserFrom(user1);
         transactionDto.setUserTo(user2);
         transactionDto.setAmount(amountTransaction);
