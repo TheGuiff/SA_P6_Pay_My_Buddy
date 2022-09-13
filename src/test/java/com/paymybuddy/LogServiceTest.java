@@ -9,16 +9,10 @@ import com.paymybuddy.dal.repository.UserRepository;
 import com.paymybuddy.service.LogService;
 import com.paymybuddy.web.dto.LogDto;
 import com.paymybuddy.web.dto.NewUserDto;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 
 import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
@@ -26,10 +20,8 @@ import java.util.NoSuchElementException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-@ActiveProfiles("test")
-//@TestPropertySource(locations="/application-test.properties") // Taper dans une autre base pour les tests
-@ExtendWith(MockitoExtension.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS) //Me permet de faire mon Before all
+@ActiveProfiles("test") // Utilisation du application-test.properties pour les tests à la place du application.properties (BDD de test)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS) //Me permet de faire mon @AfterAll
 public class LogServiceTest {
 
     @Autowired
@@ -56,14 +48,12 @@ public class LogServiceTest {
     private static final String firstname2 = "Firstname2";
     private static final String lastname2 = "Lastname2";
 
-    private User user1 = new User();
-    private Log log1 = new Log();
     private final LogDto logDto = new LogDto();
     private static final String emailKo = "emailKO@test.com";
     private static final String mdpKo = "mdpKoTest";
     private final NewUserDto newUserDto = new NewUserDto();
 
-    @BeforeAll
+    @BeforeEach
     public void initDataBase() {
         //Reinit de la base
         transactionRepository.deleteAll();
@@ -72,13 +62,26 @@ public class LogServiceTest {
         userRepository.deleteAll();
 
         //User 1 - log et user
+        Log log1 = new Log();
         log1.setEmail(email1);
         log1.setMdp(mdp1);
+        User user1 = new User();
         user1.setFirstName(firstName1);
         user1.setLastName(lastName1);
+        user1.getMovements().clear();
+        user1.getTransactions().clear();
+        user1.getConnections().clear();
         user1 = userRepository.save(user1);
         log1.setUser(user1);
-        log1 = logRepository.hashPasswordAndSave(log1);
+        logRepository.hashPasswordAndSave(log1);
+    }
+
+    @AfterAll
+    public void emptyBase() {
+        transactionRepository.deleteAll();
+        movementRepository.deleteAll();
+        logRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
