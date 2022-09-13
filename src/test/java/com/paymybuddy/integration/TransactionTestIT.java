@@ -87,6 +87,9 @@ public class TransactionTestIT {
         log2.setUser(user2);
         logRepository.hashPasswordAndSave(log2);
 
+        //user2 est une connection de user1
+        user1.getConnections().add(user2);
+
     }
 
     @AfterAll
